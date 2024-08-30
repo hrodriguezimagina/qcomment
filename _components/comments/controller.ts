@@ -13,6 +13,7 @@ export default function controller(props: any, emit: any) {
   // States
   const state = reactive({
     // Key: Default Value
+    loading: false
   })
 
   // Computed
@@ -23,10 +24,29 @@ export default function controller(props: any, emit: any) {
   // Methods
   const methods = {
     // methodKey: () => {}
+    init(){
+      methods.getCommentsList()
+
+    }, 
+    getCommentsList(){
+      const params = {
+        filter: {
+          commentableType: props.commentableType,
+          commentableId: props.commentableId
+        },
+        //include: "userProfile",
+      };
+      state.loading = true
+      service.getData(props.apiRoute, params).then((response) =>{
+        console.log(response)
+      })
+    }
+    
   }
 
   // Mounted
   onMounted(() => {
+    methods.init()
   })
 
   // Watch
