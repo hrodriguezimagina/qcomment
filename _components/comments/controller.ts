@@ -13,7 +13,8 @@ export default function controller(props: any, emit: any) {
   // States
   const state = reactive({
     // Key: Default Value
-    loading: false
+    loading: false, 
+    comments: []
   })
 
   // Computed
@@ -25,7 +26,7 @@ export default function controller(props: any, emit: any) {
   const methods = {
     // methodKey: () => {}
     init(){
-      methods.getCommentsList()
+     methods.getCommentsList()
 
     }, 
     getCommentsList(){
@@ -36,9 +37,13 @@ export default function controller(props: any, emit: any) {
         },
         //include: "userProfile",
       };
+      console.log(params)
       state.loading = true
-      service.getData(props.apiRoute, params).then((response) =>{
+      service.getData(props.apiRoute, true, params).then((response) =>{
         console.log(response)
+      }).catch((error) => {
+        state.loading = false
+        console.log(`error on getCommentsList: ${error}`)
       })
     }
     
