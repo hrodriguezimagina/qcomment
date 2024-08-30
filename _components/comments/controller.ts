@@ -27,26 +27,51 @@ export default function controller(props: any, emit: any) {
     // methodKey: () => {}
     init(){
      methods.getCommentsList()
-
-    }, 
+    },
+    createdBy(item){
+      return item.userProfile?.firstName ? `${item.userProfile.firstName} ${item.userProfile.lastName}` : item.userProfile.email
+    },
+    profileImage(item){
+      return item.userProfile?.mainImage ? item.userProfile?.mainImage : ''
+    },
     getCommentsList(){
       const params = {
         filter: {
           commentableType: props.commentableType,
-          commentableId: props.commentableId
+          commentableId: props.commentableId,
         },
-        //include: "userProfile",
+        include: "userProfile",
       };
-      console.log(params)
+
       state.loading = true
-      service.getData(props.apiRoute, true, params).then((response) =>{
-        console.log(response)
+      service.getCommentsList(true, params).then((response) =>{
+        state.loading = false
+        if(response?.data){
+          state.comments = response.data
+        }
       }).catch((error) => {
         state.loading = false
         console.log(`error on getCommentsList: ${error}`)
       })
+    },
+    createComment(){
+      state.loading = true
+      const data = {
+        comment: 'testing comment',
+        commentableType: props.commentableType,
+        commentableId: props.commentableId,
+        //userId: props.userId
+      }
+      service.createComment(data).then((response) =>{
+        state.loading = false
+        if(response?.data){
+          methods.getCommentsList()
+        }
+      }).catch((error) => {
+        state.loading = false
+        console.log(`error on createComment: ${error}`)
+      })
     }
-    
   }
 
   // Mounted

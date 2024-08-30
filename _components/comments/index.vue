@@ -1,46 +1,50 @@
 <template>
   <div id="pageId">
-    <q-list padding>
-      <q-item>
-        <q-item-section top avatar>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-          </q-avatar>
-        </q-item-section>
+    <q-list>
+      <template v-for="(item, name) in comments" :key="name">
+        <q-item>
+          <q-item-section top avatar>
+            <q-avatar>
+              <img :src="`${profileImage(item)}`">
+            </q-avatar>
+          </q-item-section>
 
-        <q-item-section>
-          <q-item-label>Single line item</q-item-label>
-          <q-item-label caption> Ya se agregó el boton en el wizard, hace falta el custom URL en cada producto(plantilla)  Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
-        </q-item-section>
-
-        <q-item-section side top>
-          <q-badge label="10k"></q-badge>
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section top avatar>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-          </q-avatar>
-        </q-item-section>
-
-        <q-item-section>
-          <q-item-label>Single line item</q-item-label>
-          <q-item-label caption>Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
-        </q-item-section>
-
-        <q-item-section side top>
-          <q-badge label="10k"></q-badge>
-        </q-item-section>
-      </q-item>
+          <q-item-section>
+            <q-item-label> {{ createdBy(item) }} {{  item.updatedAt }}</q-item-label>
+            <q-item-label> 
+              <div>
+                {{ item.comment }}
+              </div>
+            </q-item-label>
+            <q-item-label>
+              <div class="flex justify-start items-start">
+                <q-btn
+                  :label="$tr('isite.cms.label.edit')" 
+                  dense
+                  no-caps
+                  unelevated
+                />        
+                <q-btn 
+                  :label="$tr('isite.cms.label.delete')" 
+                  dense
+                  no-caps
+                  unelevated
+                  class="q-ml-sm"
+                />
+              </div>
+            </q-item-label>
+          </q-item-section>
+        </q-item>        
+      </template>
     </q-list>
+    
     <inner-loading :visible="loading" />
   </div>
 </template>
 <script lang="ts">
 import {defineComponent} from 'vue'
 import controller from 'modules/qcomment/_components/comments/controller'
-import { apiRouteDefault, permissionsCommentsDefault} from 'modules/qcomment/_components/comments/interface'
+import { permissionsCommentsDefault} from 'modules/qcomment/_components/comments/interface'
 
 export default defineComponent({
   props: {    
@@ -51,21 +55,22 @@ export default defineComponent({
     commentableType: {
       type: String,
       //default: () => commentableTypeDefault,
-    },    
-    apiRoute: {
-      type: String,
-      //default: () => apiRouteDefault,
-      default: () => config("apiRoutes.qcomment.comments"),      
     },
     permisionComments: {
       type: String,
       default: () => permissionsCommentsDefault,
-    }
+    }, 
+    /*
+    userId: {
+     type: Number, 
+     default: () => this.$store.state.quserAuth.userId
+    },
+    */
   },
   components: {},
   setup(props, {emit}) {
     return controller(props, emit)
-  }
+  },   
 })
 </script>
 <style lang="scss">
