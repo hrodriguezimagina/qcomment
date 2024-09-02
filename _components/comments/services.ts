@@ -24,7 +24,7 @@ export default {
   showComment(criteria, params = {}): Promise<any> {
     return new Promise((resolve, reject) => {      
       //Request
-      baseService.show(apiRoute, criteria, params).then(response => {
+      baseService.show(apiRoute, criteria, {params, refresh: true}).then(response => {
         resolve(response)
       }).catch(error => reject(error))
     })

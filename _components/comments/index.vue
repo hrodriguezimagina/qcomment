@@ -1,5 +1,8 @@
 <template>
-  <div id="pageId">
+  <div id="comments">
+    <div class="text-subtitle1 q-my-md">
+      Comments
+    </div>
     <q-list>
       <template v-for="(item, name) in comments" :key="name">
         <q-item>
@@ -7,37 +10,81 @@
             <q-avatar>
               <img :src="`${profileImage(item)}`">
             </q-avatar>
-          </q-item-section>
+          </q-item-section>          
 
           <q-item-section>
-            <q-item-label> {{ createdBy(item) }} {{  item.updatedAt }}</q-item-label>
-            <q-item-label> 
-              <div>
-                {{ item.comment }}
+            <q-item-label> {{ createdBy(item) }}   {{  item.updatedAt }}</q-item-label>
+            
+            <q-item-label class="q-py-md"> 
+              <dynamic-field 
+                v-if="item?.edit" 
+                class="q-mb-md" 
+                v-model="updateCommentModel"                 
+                :field="{type: 'html'}"
+              />
+              <div 
+                v-else
+                v-html="item.comment"
+                style=" transition: opacity 0.5s ease, visibility 0.5s ease;"
+              >
               </div>
             </q-item-label>
-            <q-item-label>
+            <q-item-label v-if="item?.edit">
               <div class="flex justify-start items-start">
                 <q-btn
-                  :label="$tr('isite.cms.label.edit')" 
-                  dense
+                  :label="$tr('isite.cms.label.update')"
                   no-caps
                   unelevated
+                  color="primary"
+                  rounded
+                  @click="updateComment(item)"
                 />        
                 <q-btn 
-                  :label="$tr('isite.cms.label.delete')" 
-                  dense
+                  :label="$tr('isite.cms.label.cancel')"
                   no-caps
                   unelevated
+                  rounded
                   class="q-ml-sm"
+                  @click="resetEdit(item)"
                 />
               </div>
             </q-item-label>
+            <q-item-label v-else>
+              <div class="flex justify-start items-start">
+                <q-btn
+                  :label="$tr('isite.cms.label.edit')"
+                  no-caps
+                  unelevated
+                  rounded
+                  @click="editComment(item)"
+                />        
+                <q-btn 
+                  :label="$tr('isite.cms.label.delete')"
+                  no-caps
+                  unelevated
+                  rounded
+                  class="q-ml-sm"
+                  @click="deleteComment(item)"
+                />
+              </div>
+            </q-item-label>
+
           </q-item-section>
         </q-item>        
       </template>
     </q-list>
-    
+    <div class="q-mt-md">
+      <dynamic-field v-model="newCommentModel" class="q-mb-md" :field="{type: 'html' }" @update:model-value="resetEdit()" />
+      <q-btn
+        :label="$tr('isite.cms.label.save')" 
+        @click="createComment()"
+        no-caps
+        unelevated
+        rounded
+        color="primary"
+        :disable="disableButton"
+      />
+    </div>
     <inner-loading :visible="loading" />
   </div>
 </template>
