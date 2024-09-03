@@ -33,6 +33,27 @@ export default function controller(props: any, emit: any) {
         },
         include: "userProfile",
       };
+    }), 
+    actions: computed(() => {
+      return [        
+        {
+          icon: 'fa-light fa-pencil',
+          name: 'edit',
+          label: i18n.tr('isite.cms.label.edit'),
+          action: (item) => {
+            methods.editComment(item);
+          }
+        },
+        {
+          icon: 'fa-light fa-trash-can',
+          name: 'delete',
+          label: i18n.tr('isite.cms.label.delete'),
+          action: (item) => {
+            methods.deleteComment(item);
+          }
+        },
+      ]
+     
     })
   }
 
@@ -92,9 +113,14 @@ export default function controller(props: any, emit: any) {
 
     },
     editComment(comment){
-      methods.resetEdit()      
-      comment.edit = true
-      state.updateCommentModel = comment.comment
+      methods.resetEdit()
+      state.comments.find((item) => {
+        if(item.id == comment.id){
+          item.edit = true
+          state.updateCommentModel = item.comment
+        }
+      })
+      
     },
     updateComment(comment){
       state.loading = true
