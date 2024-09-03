@@ -3,18 +3,28 @@
     <div class="text-subtitle1 q-my-md">
       Comments
     </div>
-    <q-list>
+    <q-list dense>
       <template v-for="(item, name) in comments" :key="name">
-        <q-item>
+        <q-item class="q-my-sm">
           <q-item-section top avatar>
             <q-avatar>
               <img :src="`${profileImage(item)}`">
             </q-avatar>
           </q-item-section>          
 
-          <q-item-section>
-            <q-item-label> {{ createdBy(item) }}   {{  item.updatedAt }}</q-item-label>
-            
+          <q-item-section class="q-pt-sm">
+            <q-item-label> 
+              <div class="row">
+                <div class="col-8">
+                  <span class="text-weight-medium">
+                    {{ createdBy(item) }}
+                  </span>                
+                </div>
+                <div class="col-4 flex justify-end">
+                  <span>{{  item.updatedAt }}</span>
+                </div>
+              </div>
+            </q-item-label>
             <q-item-label class="q-py-md"> 
               <dynamic-field 
                 v-if="item?.edit" 
@@ -35,7 +45,7 @@
                   no-caps
                   unelevated
                   color="primary"
-                  rounded
+                  rounded                  
                   @click="updateComment(item)"
                 />        
                 <q-btn 
@@ -55,6 +65,7 @@
                   no-caps
                   unelevated
                   rounded
+                  dense
                   @click="editComment(item)"
                 />        
                 <q-btn 
@@ -62,7 +73,8 @@
                   no-caps
                   unelevated
                   rounded
-                  class="q-ml-sm"
+                  dense
+                  class="q-ml-md"
                   @click="deleteComment(item)"
                 />
               </div>
