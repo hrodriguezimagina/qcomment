@@ -2,7 +2,7 @@ import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} f
 import service from 'modules/qcomment/_components/comments/services'
 import store from 'modules/qcomment/_components/comments/store'
 import { i18n, clone, alert } from 'src/plugins/utils';
-import defaultImg from 'src/modules/qsite/_components/master/comments/assets/default.jpg'
+import defaultImg from 'src/modules/quser/_assets/default.jpg'
 
 export default function controller(props: any, emit: any) {
   const proxy = getCurrentInstance()!.appContext.config.globalProperties

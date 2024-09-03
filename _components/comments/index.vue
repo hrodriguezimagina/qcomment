@@ -25,7 +25,6 @@
               <div 
                 v-else
                 v-html="item.comment"
-                style=" transition: opacity 0.5s ease, visibility 0.5s ease;"
               >
               </div>
             </q-item-label>
