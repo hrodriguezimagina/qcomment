@@ -105,7 +105,7 @@ export default defineComponent({
     field: {
       default: {
         type: 'input',
-        props: {label: 'new comment'}
+        props: {label: ''}
       }
     }
   },
