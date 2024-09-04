@@ -1,8 +1,8 @@
 import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
 import service from 'modules/qcomment/_components/comments/services'
-import store from 'modules/qcomment/_components/comments/store'
-import { i18n, clone, alert } from 'src/plugins/utils';
+import { store, i18n, clone, alert } from 'src/plugins/utils';
 import defaultImg from 'src/modules/quser/_assets/default.jpg'
+import { permissionsCommentsDefault} from 'modules/qcomment/_components/comments/interface'
 
 export default function controller(props: any, emit: any) {
   const proxy = getCurrentInstance()!.appContext.config.globalProperties
@@ -24,6 +24,15 @@ export default function controller(props: any, emit: any) {
   // Computed
   const computeds = {
     // key: computed(() => {})
+    hasPermission: computed(() => {
+      //Default permission
+      return  {
+        create: store.hasAccess(`${permissionsCommentsDefault}.create`),
+        index: store.hasAccess(`${permissionsCommentsDefault}.index`),
+        edit:  store.hasAccess(`${permissionsCommentsDefault}.edit`),
+        destroy: store.hasAccess(`${permissionsCommentsDefault}.destroy`)
+      };
+    }),
     disableButton: computed(() => state.newCommentModel ==  null || state.newCommentModel ==  ''),
     paramsRequest: computed(() => {
       return {
@@ -34,26 +43,27 @@ export default function controller(props: any, emit: any) {
         include: "userProfile",
       };
     }), 
-    actions: computed(() => {
-      return [        
-        {
-          icon: 'fa-light fa-pencil',
-          name: 'edit',
-          label: i18n.tr('isite.cms.label.edit'),
-          action: (item) => {
-            methods.editComment(item);
-          }
-        },
-        {
-          icon: 'fa-light fa-trash-can',
-          name: 'delete',
-          label: i18n.tr('isite.cms.label.delete'),
-          action: (item) => {
-            methods.deleteComment(item);
-          }
-        },
-      ]
-     
+    actions: computed(() => {      
+      const response = []
+      const editAction = {
+        icon: 'fa-light fa-pencil',
+        name: 'edit',
+        label: i18n.tr('isite.cms.label.edit'),
+        action: (item) => {
+          methods.editComment(item);
+        }
+      }
+      const deleteAction = {
+        icon: 'fa-light fa-trash-can',
+        name: 'delete',
+        label: i18n.tr('isite.cms.label.delete'),
+        action: (item) => {
+          methods.deleteComment(item);
+        }
+      }
+      if(computeds.hasPermission.value.edit) response.push(editAction)
+      if(computeds.hasPermission.value.destroy) response.push(deleteAction)
+      return response     
     })
   }
 
@@ -61,7 +71,9 @@ export default function controller(props: any, emit: any) {
   const methods = {
     // methodKey: () => {}
     init(){
-     methods.getCommentsList()
+      if(computeds.hasPermission.value.index){
+        methods.getCommentsList()
+      }
     },
     createdBy(item){
       if(!item?.userProfile) return ''
@@ -71,7 +83,7 @@ export default function controller(props: any, emit: any) {
       if(!item?.userProfile) return defaultImg
       return item.userProfile?.mainImage ? item.userProfile?.mainImage : defaultImg
     },
-    getCommentsList(){
+    getCommentsList(){      
       state.loading = true
       service.getCommentsList(true, computeds.paramsRequest.value).then((response) =>{
         state.loading = false
@@ -110,7 +122,6 @@ export default function controller(props: any, emit: any) {
       state.comments.forEach((comment) => {
         comment.edit = false        
       })
-
     },
     editComment(comment){
       methods.resetEdit()
@@ -119,8 +130,7 @@ export default function controller(props: any, emit: any) {
           item.edit = true
           state.updateCommentModel = item.comment
         }
-      })
-      
+      })      
     },
     updateComment(comment){
       state.loading = true
